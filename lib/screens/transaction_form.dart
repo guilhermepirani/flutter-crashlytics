@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:persistencia_flutter_alura/components/response_dialog.dart';
 import 'package:persistencia_flutter_alura/components/transaction_auth_dialog.dart';
 import 'package:persistencia_flutter_alura/http/webclients/transaction_webclient.dart';
 
@@ -89,8 +92,29 @@ class _TransactionFormState extends State<TransactionForm> {
 
   void _save(Transaction transactionCreated, String password,
       BuildContext context) async {
-    _webClient.save(transactionCreated, password).then(
-          (transaction) => Navigator.pop(context),
-        );
+    final Transaction transaction =
+        await _webClient.save(transactionCreated, password).catchError((e) {
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return FailureDialog(e.message);
+          });
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return FailureDialog(e.message);
+          });
+    }, test: (e) => e is Exception);
+
+    // ignore: unnecessary_null_comparison
+    if (transaction != null) {
+      await showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return const SuccessDialog('Successful Transaction');
+          });
+      Navigator.pop(context);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistencia_flutter_alura/components/transaction_auth_dialog.dart';
 import 'package:persistencia_flutter_alura/http/webclients/transaction_webclient.dart';
 
 import '../models/contact.dart';
@@ -66,9 +67,15 @@ class _TransactionFormState extends State<TransactionForm> {
                           double.tryParse(_valueController.text) as double;
                       final transactionCreated =
                           Transaction(value, widget.contact);
-                      _webClient.save(transactionCreated).then(
-                            (transaction) => Navigator.pop(context),
-                          );
+                      showDialog(
+                          context: context,
+                          builder: (contextDialog) {
+                            return TransactionAuthDialog(
+                              onConfirm: (String password) {
+                                _save(transactionCreated, password, context);
+                              },
+                            );
+                          });
                     },
                   ),
                 ),
@@ -78,5 +85,12 @@ class _TransactionFormState extends State<TransactionForm> {
         ),
       ),
     );
+  }
+
+  void _save(Transaction transactionCreated, String password,
+      BuildContext context) async {
+    _webClient.save(transactionCreated, password).then(
+          (transaction) => Navigator.pop(context),
+        );
   }
 }

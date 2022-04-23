@@ -1,3 +1,4 @@
+import 'dart:_http';
 import 'dart:convert';
 
 import 'package:http/http.dart';
@@ -29,7 +30,7 @@ class TransactionWebClient {
       return Transaction.fromJson(jsonDecode(response.body));
     }
 
-    throw Exception(_statusCodeResponses[response.statusCode]);
+    throw HttpException(_statusCodeResponses[response.statusCode] as String);
   }
 
   static final Map<int, String> _statusCodeResponses = {

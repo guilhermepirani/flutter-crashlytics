@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:persistencia_flutter_alura/components/response_dialog.dart';
 import 'package:persistencia_flutter_alura/components/transaction_auth_dialog.dart';
 import 'package:persistencia_flutter_alura/http/webclients/transaction_webclient.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/contact.dart';
 import '../models/transaction.dart';
@@ -21,6 +22,7 @@ class TransactionForm extends StatefulWidget {
 class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
+  final String transactionId = const Uuid().v4();
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       final double value =
                           double.tryParse(_valueController.text) as double;
                       final transactionCreated =
-                          Transaction(value, widget.contact);
+                          Transaction(transactionId, value, widget.contact);
                       showDialog(
                           context: context,
                           builder: (contextDialog) {

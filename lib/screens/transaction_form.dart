@@ -1,7 +1,8 @@
-import 'dart:_http';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:persistencia_flutter_alura/components/progress.dart';
 import 'package:persistencia_flutter_alura/components/response_dialog.dart';
 import 'package:persistencia_flutter_alura/components/transaction_auth_dialog.dart';
 import 'package:persistencia_flutter_alura/http/webclients/transaction_webclient.dart';
@@ -24,6 +25,8 @@ class _TransactionFormState extends State<TransactionForm> {
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionId = const Uuid().v4();
 
+  bool _sending = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +39,13 @@ class _TransactionFormState extends State<TransactionForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Visibility(
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Progress(message: 'Sending...'),
+                ),
+                visible: _sending,
+              ),
               Text(
                 widget.contact.name,
                 style: const TextStyle(
@@ -117,6 +127,7 @@ class _TransactionFormState extends State<TransactionForm> {
 
   Future<Transaction> _send(Transaction transactionCreated, String password,
       BuildContext context) async {
+    setState(() => _sending = true);
     final Transaction transaction =
         await _webClient.save(transactionCreated, password).catchError((e) {
       _showFailureMessage(context, message: e.message);
@@ -124,7 +135,7 @@ class _TransactionFormState extends State<TransactionForm> {
       _showFailureMessage(context, message: 'Timeout');
     }, test: (e) => e is TimeoutException).catchError((e) {
       _showFailureMessage(context);
-    });
+    }).whenComplete(() => setState(() => _sending = false));
     return transaction;
   }
 

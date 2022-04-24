@@ -1,5 +1,5 @@
-import 'dart:_http';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 
@@ -17,6 +17,7 @@ class TransactionWebClient {
   }
 
   Future<Transaction> save(Transaction transaction, String password) async {
+    await Future.delayed(const Duration(seconds: 10));
     final Response response = await client.post(
       buildUri('transactions'),
       headers: {

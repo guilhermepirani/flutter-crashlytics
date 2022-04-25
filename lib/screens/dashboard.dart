@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:persistencia_flutter_alura/screens/contacts_list.dart';
 
@@ -87,6 +88,8 @@ class _FeatureItem extends StatelessWidget {
 }
 
 void _showContactsList(BuildContext context) {
+  FirebaseCrashlytics.instance.crash();
+
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => const ContactsList(),

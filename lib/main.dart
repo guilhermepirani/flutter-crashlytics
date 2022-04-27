@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -18,7 +20,8 @@ void main() async {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
 
-  runApp(BytebankApp());
+  runZonedGuarded(() async => runApp(BytebankApp()),
+      FirebaseCrashlytics.instance.recordError);
 }
 
 class BytebankApp extends StatelessWidget {
